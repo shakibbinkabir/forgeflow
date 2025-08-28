@@ -38,5 +38,5 @@
 <?php
 $content = ob_get_clean();
 $title = 'Login';
-include 'layout.php';
+include __DIR__ . '/layout.php';
 ?>

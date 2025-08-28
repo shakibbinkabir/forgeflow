@@ -16,12 +16,24 @@ spl_autoload_register(function ($className) {
 // Initialize database
 try {
     $db = \ForgeFlow\Database::getInstance();
+    $pdo = $db->getConnection();
     
-    // Run migrations if database is empty
-    $tables = $db->getConnection()->query("SELECT name FROM sqlite_master WHERE type='table'")->fetchAll();
-    if (empty($tables)) {
+    // Run migrations if database is empty (supports MySQL and SQLite)
+    $driver = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME);
+    $hasTables = false;
+    if ($driver === 'mysql') {
+        $stmt = $pdo->query("SELECT COUNT(*) AS cnt FROM information_schema.tables WHERE table_schema = DATABASE()");
+        $row = $stmt->fetch();
+        $hasTables = isset($row['cnt']) ? (int)$row['cnt'] > 0 : false;
+    } else { // sqlite and others
+        $stmt = $pdo->query("SELECT COUNT(*) AS cnt FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+        $row = $stmt->fetch();
+        $hasTables = isset($row['cnt']) ? (int)$row['cnt'] > 0 : false;
+    }
+
+    if (!$hasTables) {
         $schema = file_get_contents(__DIR__ . '/../database/schema.sql');
-        $db->getConnection()->exec($schema);
+        $pdo->exec($schema);
     }
 } catch (Exception $e) {
     die("Database initialization failed: " . $e->getMessage());
@@ -46,6 +58,14 @@ class Router
     {
         $method = $_SERVER['REQUEST_METHOD'];
         $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+        // Normalize for subdirectory deployments (e.g., /forgeflow/public)
+        $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+        $path = str_replace('\\', '/', $path);
+        if ($basePath && $basePath !== '/' && strpos($path, $basePath) === 0) {
+            $path = substr($path, strlen($basePath));
+            if ($path === '' || $path === false) { $path = '/'; }
+        }
         
         // Remove trailing slash except for root
         if ($path !== '/' && substr($path, -1) === '/') {
@@ -103,8 +123,7 @@ class Auth
     public static function requireAuth()
     {
         if (!self::check()) {
-            header('Location: /login');
-            exit;
+            redirect('/login');
         }
     }
 
@@ -121,7 +140,9 @@ class Auth
 // Utility functions
 function redirect($path)
 {
-    header("Location: {$path}");
+    $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+    $target = ($basePath && $basePath !== '/') ? $basePath . $path : $path;
+    header("Location: {$target}");
     exit;
 }
 
@@ -133,7 +154,15 @@ function view($name, $data = [])
 
 function asset($path)
 {
-    return "/{$path}";
+    $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+    $prefix = ($basePath && $basePath !== '/') ? $basePath . '/' : '/';
+    return $prefix . ltrim($path, '/');
+}
+
+// Include layout from views root using absolute path
+function include_layout()
+{
+    require __DIR__ . '/../src/Views/layout.php';
 }
 
 function uploadFile($file, $directory = 'general')
@@ -190,6 +219,10 @@ $router->post('/messages', function() {
     require __DIR__ . '/../src/Controllers/MessageController.php';
 });
 
+$router->get('/customers', function() {
+    require __DIR__ . '/../src/Controllers/CustomerController.php';
+});
+
 $router->get('/users', function() {
     require __DIR__ . '/../src/Controllers/UserController.php';
 });
@@ -204,8 +237,12 @@ $router->get('/reports', function() {
 
 $router->get('/uploads', function() {
     // Handle file serving
-    $path = $_SERVER['REQUEST_URI'];
-    $filePath = __DIR__ . '/..' . $path;
+    $requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+    if ($basePath && $basePath !== '/' && strpos($requestPath, $basePath) === 0) {
+        $requestPath = substr($requestPath, strlen($basePath));
+    }
+    $filePath = __DIR__ . '/..' . $requestPath;
     
     if (file_exists($filePath) && is_file($filePath)) {
         $mimeType = mime_content_type($filePath);

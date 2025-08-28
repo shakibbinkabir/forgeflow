@@ -8,8 +8,8 @@ function getStatusBadgeClass($status) {
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Order Details</h1>
     <div>
-        <a href="/orders?action=edit&id=<?= $order['id'] ?>" class="btn btn-primary">Edit Order</a>
-        <a href="/orders" class="btn btn-secondary">Back to Orders</a>
+    <a href="<?= asset('/orders?action=edit&id=' . $order['id']) ?>" class="btn btn-primary">Edit Order</a>
+    <a href="<?= asset('/orders') ?>" class="btn btn-secondary">Back to Orders</a>
     </div>
 </div>
 
@@ -63,7 +63,7 @@ function getStatusBadgeClass($status) {
                         <?php if ($order['design_file']): ?>
                             <div class="col-md-6">
                                 <p><strong>Design File:</strong> 
-                                    <a href="/uploads/<?= htmlspecialchars($order['design_file']) ?>" 
+                                    <a href="<?= asset('/uploads/' . htmlspecialchars($order['design_file'])) ?>" 
                                        class="btn btn-sm btn-outline-primary" download>
                                         <i class="bi bi-download"></i> Download Design
                                     </a>
@@ -73,7 +73,7 @@ function getStatusBadgeClass($status) {
                         <?php if ($order['reference_image']): ?>
                             <div class="col-md-6">
                                 <p><strong>Reference Image:</strong></p>
-                                <img src="/uploads/<?= htmlspecialchars($order['reference_image']) ?>" 
+                                <img src="<?= asset('/uploads/' . htmlspecialchars($order['reference_image'])) ?>" 
                                      class="img-thumbnail" style="max-width: 200px;" alt="Reference Image">
                             </div>
                         <?php endif; ?>
@@ -135,7 +135,7 @@ function getStatusBadgeClass($status) {
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <a href="/messages?order_id=<?= $order['id'] ?>" class="btn btn-outline-primary btn-sm">
+                    <a href="<?= asset('/messages?order_id=' . $order['id']) ?>" class="btn btn-outline-primary btn-sm">
                         <i class="bi bi-chat"></i> Send Message
                     </a>
                     <?php if (Auth::isAdmin()): ?>
@@ -164,7 +164,7 @@ function getStatusBadgeClass($status) {
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <form method="POST" action="/orders?action=delete&id=<?= $order['id'] ?>" class="d-inline">
+                <form method="POST" action="<?= asset('/orders?action=delete&id=' . $order['id']) ?>" class="d-inline">
                     <button type="submit" class="btn btn-danger">Delete Order</button>
                 </form>
             </div>
@@ -176,5 +176,5 @@ function getStatusBadgeClass($status) {
 <?php
 $content = ob_get_clean();
 $title = 'Order #' . $order['order_number'];
-include '../layout.php';
+include __DIR__ . '/../layout.php';
 ?>

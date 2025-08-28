@@ -12,6 +12,15 @@ class Database
         $db = $config['database'];
         
         try {
+            // First, connect to MySQL server without specifying DB to ensure database exists
+            $serverDsn = "mysql:host={$db['host']};charset={$db['charset']}";
+            $serverPdo = new \PDO($serverDsn, $db['username'], $db['password'], [
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            ]);
+            $dbName = preg_replace('/[^a-zA-Z0-9_\-]/', '', $db['dbname']);
+            $serverPdo->exec("CREATE DATABASE IF NOT EXISTS `{$dbName}` CHARACTER SET {$db['charset']} COLLATE {$db['charset']}_general_ci");
+
+            // Now connect to the specific database
             $dsn = "mysql:host={$db['host']};dbname={$db['dbname']};charset={$db['charset']}";
             $this->connection = new \PDO($dsn, $db['username'], $db['password'], [
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,

@@ -3,7 +3,7 @@
 <h1>Customer Messages</h1>
 
 <div class="mb-3">
-    <a href="/orders" class="btn btn-secondary">
+    <a href="<?= asset('/orders') ?>" class="btn btn-secondary">
         <i class="bi bi-arrow-left"></i> Back to Orders
     </a>
 </div>
@@ -31,7 +31,7 @@
                         <?php foreach ($messages as $message): ?>
                             <tr>
                                 <td>
-                                    <a href="/orders?action=view&id=<?= $message['order_id'] ?>">
+                                    <a href="<?= asset('/orders?action=view&id=' . $message['order_id']) ?>">
                                         <?= htmlspecialchars($message['order_number']) ?>
                                     </a>
                                 </td>
@@ -51,7 +51,7 @@
                                 </td>
                                 <td><?= date('M j, Y g:i A', strtotime($message['created_at'])) ?></td>
                                 <td>
-                                    <a href="/messages?order_id=<?= $message['order_id'] ?>" 
+                                    <a href="<?= asset('/messages?order_id=' . $message['order_id']) ?>" 
                                        class="btn btn-sm btn-outline-primary">View Thread</a>
                                 </td>
                             </tr>
@@ -66,5 +66,5 @@
 <?php
 $content = ob_get_clean();
 $title = 'Messages';
-include 'layout.php';
+include __DIR__ . '/../layout.php';
 ?>

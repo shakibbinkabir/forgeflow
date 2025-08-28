@@ -38,23 +38,23 @@
                     <div class="d-flex flex-column p-3">
                         <h4 class="mb-4">ForgeFlow</h4>
                         <nav class="nav nav-pills flex-column mb-auto">
-                            <a href="/" class="nav-link <?= $_SERVER['REQUEST_URI'] == '/' ? 'active' : '' ?>">
+                            <a href="<?= asset('/') ?>" class="nav-link <?= $_SERVER['REQUEST_URI'] == '/' ? 'active' : '' ?>">
                                 <i class="bi bi-house-door me-2"></i>Dashboard
                             </a>
-                            <a href="/orders" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/orders') === 0 ? 'active' : '' ?>">
+                            <a href="<?= asset('/orders') ?>" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/orders') === 0 ? 'active' : '' ?>">
                                 <i class="bi bi-box me-2"></i>Orders
                             </a>
-                            <a href="/messages" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/messages') === 0 ? 'active' : '' ?>">
+                            <a href="<?= asset('/messages') ?>" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/messages') === 0 ? 'active' : '' ?>">
                                 <i class="bi bi-chat me-2"></i>Messages
                             </a>
-                            <a href="/customers" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/customers') === 0 ? 'active' : '' ?>">
+                            <a href="<?= asset('/customers') ?>" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/customers') === 0 ? 'active' : '' ?>">
                                 <i class="bi bi-people me-2"></i>Customers
                             </a>
-                            <a href="/reports" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/reports') === 0 ? 'active' : '' ?>">
+                            <a href="<?= asset('/reports') ?>" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/reports') === 0 ? 'active' : '' ?>">
                                 <i class="bi bi-graph-up me-2"></i>Reports
                             </a>
                             <?php if (Auth::isAdmin()): ?>
-                                <a href="/users" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/users') === 0 ? 'active' : '' ?>">
+                                <a href="<?= asset('/users') ?>" class="nav-link <?= strpos($_SERVER['REQUEST_URI'], '/users') === 0 ? 'active' : '' ?>">
                                     <i class="bi bi-person-gear me-2"></i>Users
                                 </a>
                             <?php endif; ?>
@@ -67,7 +67,7 @@
                                 <?= htmlspecialchars($_SESSION['user_name']) ?>
                             </a>
                             <ul class="dropdown-menu text-small shadow">
-                                <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+                                <li><a class="dropdown-item" href="<?= asset('/logout') ?>">Sign out</a></li>
                             </ul>
                         </div>
                     </div>

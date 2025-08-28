@@ -46,11 +46,11 @@
     <div class="card-body">
         <p>Export data for business analysis or record-keeping purposes.</p>
         <div class="d-flex gap-2">
-            <a href="/reports?action=export_orders" class="btn btn-primary">
+            <a href="<?= asset('/reports?action=export_orders') ?>" class="btn btn-primary">
                 <i class="bi bi-download"></i> Export Orders (CSV)
             </a>
             <?php if (Auth::isAdmin()): ?>
-                <a href="/reports?action=export_customers" class="btn btn-secondary">
+                <a href="<?= asset('/reports?action=export_customers') ?>" class="btn btn-secondary">
                     <i class="bi bi-download"></i> Export Customers (CSV)
                 </a>
             <?php endif; ?>
@@ -146,5 +146,5 @@ const trendsChart = new Chart(trendsCtx, {
 <?php
 $content = ob_get_clean();
 $title = 'Reports';
-include 'layout.php';
+include __DIR__ . '/../layout.php';
 ?>

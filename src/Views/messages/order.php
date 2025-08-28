@@ -3,10 +3,10 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Messages for Order #<?= htmlspecialchars($order['order_number']) ?></h1>
     <div>
-        <a href="/messages?action=create&order_id=<?= $order['id'] ?>" class="btn btn-primary">
+    <a href="<?= asset('/messages?action=create&order_id=' . $order['id']) ?>" class="btn btn-primary">
             <i class="bi bi-plus"></i> Add Message
         </a>
-        <a href="/orders?action=view&id=<?= $order['id'] ?>" class="btn btn-secondary">
+    <a href="<?= asset('/orders?action=view&id=' . $order['id']) ?>" class="btn btn-secondary">
             View Order
         </a>
     </div>
@@ -38,7 +38,7 @@
         <?php if (empty($messages)): ?>
             <div class="text-center py-4">
                 <p class="text-muted">No messages yet.</p>
-                <a href="/messages?action=create&order_id=<?= $order['id'] ?>" class="btn btn-primary">
+                <a href="<?= asset('/messages?action=create&order_id=' . $order['id']) ?>" class="btn btn-primary">
                     Start Conversation
                 </a>
             </div>
@@ -72,7 +72,7 @@
             <!-- Quick Reply Form -->
             <div class="mt-4">
                 <h6>Quick Reply</h6>
-                <form method="POST" action="/messages?action=create&order_id=<?= $order['id'] ?>">
+                <form method="POST" action="<?= asset('/messages?action=create&order_id=' . $order['id']) ?>">
                     <div class="mb-3">
                         <textarea class="form-control" name="message" rows="3" 
                                   placeholder="Type your message..." required></textarea>
@@ -107,5 +107,5 @@ document.getElementById('is_from_customer').addEventListener('change', function(
 <?php
 $content = ob_get_clean();
 $title = 'Messages - Order #' . $order['order_number'];
-include '../layout.php';
+include __DIR__ . '/../layout.php';
 ?>

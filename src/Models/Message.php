@@ -20,16 +20,32 @@ class Message extends BaseModel
 
     public function getRecentMessages($limit = 10)
     {
-        $stmt = $this->db->prepare("
-            SELECT m.*, o.order_number, u.name as user_name 
-            FROM messages m 
-            JOIN orders o ON m.order_id = o.id 
-            LEFT JOIN users u ON m.user_id = u.id 
-            ORDER BY m.created_at DESC 
-            LIMIT ?
-        ");
-        $stmt->execute([$limit]);
-        return $stmt->fetchAll();
+            $limit = (int)$limit;
+            $driver = $this->db->getAttribute(\PDO::ATTR_DRIVER_NAME);
+            if ($driver === 'mysql') {
+                $sql = "
+                    SELECT m.*, o.order_number, u.name as user_name 
+                    FROM messages m 
+                    JOIN orders o ON m.order_id = o.id 
+                    LEFT JOIN users u ON m.user_id = u.id 
+                    ORDER BY m.created_at DESC 
+                    LIMIT {$limit}
+                ";
+                $stmt = $this->db->query($sql);
+                return $stmt->fetchAll();
+            } else {
+                $stmt = $this->db->prepare("
+                    SELECT m.*, o.order_number, u.name as user_name 
+                    FROM messages m 
+                    JOIN orders o ON m.order_id = o.id 
+                    LEFT JOIN users u ON m.user_id = u.id 
+                    ORDER BY m.created_at DESC 
+                    LIMIT ?
+                ");
+                $stmt->bindValue(1, $limit, \PDO::PARAM_INT);
+                $stmt->execute();
+                return $stmt->fetchAll();
+            }
     }
 
     public function createMessage($orderId, $message, $userId = null, $customerName = null, $isFromCustomer = false)

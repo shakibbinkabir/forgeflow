@@ -99,12 +99,12 @@
     
     <div class="mt-3">
         <button type="submit" class="btn btn-primary">Create Order</button>
-        <a href="/" class="btn btn-secondary">Cancel</a>
+    <a href="<?= asset('/') ?>" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
 
 <?php
 $content = ob_get_clean();
 $title = 'Create Order';
-include '../layout.php';
+include __DIR__ . '/../layout.php';
 ?>

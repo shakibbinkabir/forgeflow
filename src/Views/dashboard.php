@@ -8,7 +8,7 @@ ob_start();
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>Dashboard</h1>
-    <a href="/orders?action=create" class="btn btn-primary">
+    <a href="<?= asset('/orders?action=create') ?>" class="btn btn-primary">
         <i class="bi bi-plus"></i> New Order
     </a>
 </div>
@@ -97,7 +97,7 @@ ob_start();
         <?php if (empty($orders)): ?>
             <div class="text-center py-4">
                 <p class="text-muted">No orders found.</p>
-                <a href="/orders?action=create" class="btn btn-primary">Create First Order</a>
+                <a href="<?= asset('/orders?action=create') ?>" class="btn btn-primary">Create First Order</a>
             </div>
         <?php else: ?>
             <div class="table-responsive">
@@ -130,7 +130,7 @@ ob_start();
                                 <td>$<?= number_format($order['price'], 2) ?></td>
                                 <td><?= date('M j, Y', strtotime($order['created_at'])) ?></td>
                                 <td>
-                                    <a href="/orders?action=view&id=<?= $order['id'] ?>" class="btn btn-sm btn-outline-primary">
+                                    <a href="<?= asset('/orders?action=view&id=' . $order['id']) ?>" class="btn btn-sm btn-outline-primary">
                                         View
                                     </a>
                                 </td>
@@ -174,5 +174,5 @@ const monthlyChart = new Chart(ctx, {
 
 <?php
 $content = ob_get_clean();
-include 'layout.php';
+include __DIR__ . '/layout.php';
 ?>

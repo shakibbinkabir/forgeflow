@@ -117,12 +117,12 @@
     
     <div class="mt-3">
         <button type="submit" class="btn btn-primary">Update Order</button>
-        <a href="/orders?action=view&id=<?= $order['id'] ?>" class="btn btn-secondary">Cancel</a>
+    <a href="<?= asset('/orders?action=view&id=' . $order['id']) ?>" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
 
 <?php
 $content = ob_get_clean();
 $title = 'Edit Order #' . $order['order_number'];
-include '../layout.php';
+include __DIR__ . '/../layout.php';
 ?>

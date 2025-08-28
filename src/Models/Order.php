@@ -28,36 +28,21 @@ class Order extends BaseModel
 
     public function findByStatus($status)
     {
-        $stmt = $this->db->prepare("
-            SELECT o.*, c.name as customer_name, c.email as customer_email, c.phone as customer_phone 
-            FROM orders o 
-            JOIN customers c ON o.customer_id = c.id 
-            WHERE o.status = ? 
-            ORDER BY o.created_at DESC
-        ");
+        $stmt = $this->db->prepare("\n            SELECT o.*, c.name as customer_name, c.email as customer_email, c.phone as customer_phone \n            FROM orders o \n            JOIN customers c ON o.customer_id = c.id \n            WHERE o.status = ? \n            ORDER BY o.created_at DESC\n        ");
         $stmt->execute([$status]);
         return $stmt->fetchAll();
     }
 
     public function findWithCustomer($id)
     {
-        $stmt = $this->db->prepare("
-            SELECT o.*, c.name as customer_name, c.email as customer_email, c.phone as customer_phone, c.address as customer_address 
-            FROM orders o 
-            JOIN customers c ON o.customer_id = c.id 
-            WHERE o.id = ?
-        ");
+        $stmt = $this->db->prepare("\n            SELECT o.*, c.name as customer_name, c.email as customer_email, c.phone as customer_phone, c.address as customer_address \n            FROM orders o \n            JOIN customers c ON o.customer_id = c.id \n            WHERE o.id = ?\n        ");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
 
     public function findAllWithCustomer($filters = [])
     {
-        $sql = "
-            SELECT o.*, c.name as customer_name, c.email as customer_email, c.phone as customer_phone 
-            FROM orders o 
-            JOIN customers c ON o.customer_id = c.id
-        ";
+        $sql = "\n            SELECT o.*, c.name as customer_name, c.email as customer_email, c.phone as customer_phone \n            FROM orders o \n            JOIN customers c ON o.customer_id = c.id\n        ";
         
         $conditions = [];
         $params = [];
@@ -108,18 +93,7 @@ class Order extends BaseModel
         $this->update($orderId, ['status' => $newStatus]);
         
         // Record status change in history
-        $historyData = [
-            'order_id' => $orderId,
-            'old_status' => $oldStatus,
-            'new_status' => $newStatus,
-            'changed_by' => $userId,
-            'notes' => $notes,
-        ];
-        
-        $stmt = $this->db->prepare("
-            INSERT INTO order_status_history (order_id, old_status, new_status, changed_by, notes, changed_at) 
-            VALUES (?, ?, ?, ?, ?, ?)
-        ");
+        $stmt = $this->db->prepare("\n            INSERT INTO order_status_history (order_id, old_status, new_status, changed_by, notes, changed_at) \n            VALUES (?, ?, ?, ?, ?, ?)\n        ");
         $stmt->execute([
             $orderId,
             $oldStatus,
@@ -134,24 +108,14 @@ class Order extends BaseModel
 
     public function getStatusHistory($orderId)
     {
-        $stmt = $this->db->prepare("
-            SELECT osh.*, u.name as changed_by_name 
-            FROM order_status_history osh 
-            LEFT JOIN users u ON osh.changed_by = u.id 
-            WHERE osh.order_id = ? 
-            ORDER BY osh.changed_at DESC
-        ");
+        $stmt = $this->db->prepare("\n            SELECT osh.*, u.name as changed_by_name \n            FROM order_status_history osh \n            LEFT JOIN users u ON osh.changed_by = u.id \n            WHERE osh.order_id = ? \n            ORDER BY osh.changed_at DESC\n        ");
         $stmt->execute([$orderId]);
         return $stmt->fetchAll();
     }
 
     public function getStatusCounts()
     {
-        $stmt = $this->db->query("
-            SELECT status, COUNT(*) as count 
-            FROM orders 
-            GROUP BY status
-        ");
+        $stmt = $this->db->query("\n            SELECT status, COUNT(*) as count \n            FROM orders \n            GROUP BY status\n        ");
         $results = $stmt->fetchAll();
         
         $counts = [];
@@ -169,25 +133,41 @@ class Order extends BaseModel
     public function getMonthlyOrderCounts($year = null)
     {
         if (!$year) $year = date('Y');
-        
-        $stmt = $this->db->prepare("
-            SELECT 
-                strftime('%m', created_at) as month,
-                COUNT(*) as count
-            FROM orders 
-            WHERE strftime('%Y', created_at) = ?
-            GROUP BY strftime('%m', created_at)
-            ORDER BY month
-        ");
+
+        $driver = $this->db->getAttribute(\PDO::ATTR_DRIVER_NAME);
+        if ($driver === 'mysql') {
+            $sql = "
+                SELECT 
+                    MONTH(created_at) AS month,
+                    COUNT(*) AS count
+                FROM orders
+                WHERE YEAR(created_at) = ?
+                GROUP BY MONTH(created_at)
+                ORDER BY month
+            ";
+        } else {
+            $sql = "
+                SELECT 
+                    CAST(strftime('%m', created_at) AS INTEGER) AS month,
+                    COUNT(*) AS count
+                FROM orders 
+                WHERE strftime('%Y', created_at) = ?
+                GROUP BY strftime('%m', created_at)
+                ORDER BY month
+            ";
+        }
+
+        $stmt = $this->db->prepare($sql);
         $stmt->execute([$year]);
-        
+
         $results = $stmt->fetchAll();
         $monthlyCounts = array_fill(1, 12, 0);
-        
         foreach ($results as $row) {
-            $monthlyCounts[(int)$row['month']] = (int)$row['count'];
+            $month = (int)$row['month'];
+            if ($month >= 1 && $month <= 12) {
+                $monthlyCounts[$month] = (int)$row['count'];
+            }
         }
-        
         return $monthlyCounts;
     }
 }

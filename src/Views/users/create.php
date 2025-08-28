@@ -46,12 +46,12 @@
     
     <div class="mt-3 text-center">
         <button type="submit" class="btn btn-primary">Create User</button>
-        <a href="/users" class="btn btn-secondary">Cancel</a>
+    <a href="<?= asset('/users') ?>" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
 
 <?php
 $content = ob_get_clean();
 $title = 'Add User';
-include '../layout.php';
+include __DIR__ . '/../layout.php';
 ?>

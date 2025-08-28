@@ -9,7 +9,7 @@ return [
     ],
     'app' => [
         'name' => 'ForgeFlow',
-        'url' => $_ENV['APP_URL'] ?? 'http://localhost',
+        'url' => $_ENV['APP_URL'] ?? 'http://localhost/forgeflow',
         'debug' => $_ENV['APP_DEBUG'] ?? true,
         'upload_path' => __DIR__ . '/../uploads/',
         'max_file_size' => 50 * 1024 * 1024, // 50MB

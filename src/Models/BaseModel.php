@@ -25,9 +25,19 @@ abstract class BaseModel
     {
         $sql = "SELECT * FROM {$this->table}";
         if ($limit) {
-            $sql .= " LIMIT ? OFFSET ?";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$limit, $offset]);
+            $limit = (int)$limit;
+            $offset = (int)$offset;
+            $driver = $this->db->getAttribute(\PDO::ATTR_DRIVER_NAME);
+            if ($driver === 'mysql') {
+                $sql .= " LIMIT {$limit} OFFSET {$offset}";
+                $stmt = $this->db->query($sql);
+            } else {
+                $sql .= " LIMIT ? OFFSET ?";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindValue(1, $limit, \PDO::PARAM_INT);
+                $stmt->bindValue(2, $offset, \PDO::PARAM_INT);
+                $stmt->execute();
+            }
         } else {
             $stmt = $this->db->query($sql);
         }

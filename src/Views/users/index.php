@@ -2,12 +2,12 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
     <h1>User Management</h1>
-    <a href="/users?action=create" class="btn btn-primary">
+    <a href="<?= asset('/users?action=create') ?>" class="btn btn-primary">
         <i class="bi bi-plus"></i> Add User
     </a>
 </div>
 
-<div class="card">
+    include __DIR__ . '/../layout.php';
     <div class="card-body">
         <div class="table-responsive">
             <table class="table table-hover">
@@ -32,7 +32,7 @@
                             </td>
                             <td><?= date('M j, Y', strtotime($user['created_at'])) ?></td>
                             <td>
-                                <a href="/users?action=edit&id=<?= $user['id'] ?>" 
+                                <a href="<?= asset('/users?action=edit&id=' . $user['id']) ?>" 
                                    class="btn btn-sm btn-outline-primary">Edit</a>
                                 <?php if ($user['id'] != Auth::user()['id']): ?>
                                     <button type="button" class="btn btn-sm btn-outline-danger" 
@@ -65,7 +65,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <form method="POST" action="/users?action=delete&id=<?= $user['id'] ?>" class="d-inline">
+                        <form method="POST" action="<?= asset('/users?action=delete&id=' . $user['id']) ?>" class="d-inline">
                             <button type="submit" class="btn btn-danger">Delete User</button>
                         </form>
                     </div>
@@ -78,5 +78,5 @@
 <?php
 $content = ob_get_clean();
 $title = 'User Management';
-include '../layout.php';
+include_layout();
 ?>
