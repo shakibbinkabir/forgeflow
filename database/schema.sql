@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    password TEXT NOT NULL,
     role VARCHAR(50) DEFAULT 'Team Member',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -61,8 +61,9 @@ CREATE TABLE IF NOT EXISTS order_status_history (
 );
 
 -- Insert default admin user (password: admin123)
-INSERT OR IGNORE INTO users (id, name, email, password, role) VALUES 
-(1, 'Administrator', 'admin@forgeflow.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin');
+DELETE FROM users WHERE id = 1;
+INSERT INTO users (id, name, email, password, role) VALUES 
+(1, 'Administrator', 'admin@forgeflow.com', '$2y$10$K/c7rPawgHcPIOVjbyFvQu42paPlTYRFPLaA9MDK7cs5WLHBwT5lS', 'Admin');
 
 -- Insert sample data
 INSERT OR IGNORE INTO customers (name, email, phone, address) VALUES 

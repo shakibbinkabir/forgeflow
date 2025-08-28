@@ -182,5 +182,40 @@ $router->post('/orders', function() {
     require __DIR__ . '/../src/Controllers/OrderController.php';
 });
 
+$router->get('/messages', function() {
+    require __DIR__ . '/../src/Controllers/MessageController.php';
+});
+
+$router->post('/messages', function() {
+    require __DIR__ . '/../src/Controllers/MessageController.php';
+});
+
+$router->get('/users', function() {
+    require __DIR__ . '/../src/Controllers/UserController.php';
+});
+
+$router->post('/users', function() {
+    require __DIR__ . '/../src/Controllers/UserController.php';
+});
+
+$router->get('/reports', function() {
+    require __DIR__ . '/../src/Controllers/ReportController.php';
+});
+
+$router->get('/uploads', function() {
+    // Handle file serving
+    $path = $_SERVER['REQUEST_URI'];
+    $filePath = __DIR__ . '/..' . $path;
+    
+    if (file_exists($filePath) && is_file($filePath)) {
+        $mimeType = mime_content_type($filePath);
+        header('Content-Type: ' . $mimeType);
+        readfile($filePath);
+    } else {
+        http_response_code(404);
+        echo 'File not found';
+    }
+});
+
 // Run the router
 $router->run();
